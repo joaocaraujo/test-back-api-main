@@ -15,12 +15,14 @@ use App\Exceptions\UserNotFoundException;
 use App\Exceptions\UserSpreadsheetException;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\DateTime;
+use App\Http\Helpers\UserHelper;
 use App\Infra\Db\UserDb;
 use App\Infra\File\Csv\Csv;
 use App\Infra\Uuid\UuidGenerator;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 class UserController extends Controller
 {
     /**
@@ -525,6 +527,10 @@ class UserController extends Controller
         try {
             $user = new User(new UserDb());
 
+            $user
+                ->setCreatedAt(new \DateTime())
+            ;
+
             $userDataValidator = 'find-the-proper-class-to-validate-the-user-data';
             $user->setDataValidator($userDataValidator);
 
@@ -552,6 +558,45 @@ class UserController extends Controller
             return $this->buildBadRequestResponse($e->getMessage());
         } catch (UserSpreadsheetException $e) {
             return $this->buildBadRequestResponse($e->getMessage());
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+    
+    public function show($id) {
+        try {
+            $users = new User(new UserDb());
+    
+            $user = $users->findById($id);
+            $response = [];
+    
+            if($user) {
+                $now = Carbon::now();
+                $eligibility = UserHelper::isEligible($user, $now);
+    
+                $response = new JsonResponse([
+                    'result' => 'success',
+                    'user' => [
+                        'id' => $user->getId(),
+                        'name' => $user->getName(),
+                        'email' => $user->getEmail(),
+                        'cpf' => $user->getCpf(),
+                        'created_at' => $user->getCreatedAt()
+                    ],
+                    'eligibility' => $eligibility
+                ], 
+                Response::HTTP_OK
+                );
+            } else {
+                $response = new JsonResponse([
+                    'result' => 'error',
+                    'message' => 'User not found'
+                ], 
+                Response::HTTP_NOT_FOUND
+                );
+            }
+    
+            return $this->buildSuccessResponse($response);
         } catch (\Exception $e) {
             throw $e;
         }

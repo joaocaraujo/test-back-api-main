@@ -76,6 +76,25 @@ class UserDb implements UserPersistenceInterface
         return $users;
     }
 
+    public function findById(string $id): ?object
+    {
+        $record = DB::table(self::TABLE_NAME)
+            ->where([self::COLUMN_UUID => $id])
+            ->first();
+
+        if (!$record) {
+            return null;
+        }
+
+        return (new User(new UserDb()))
+            ->setDataValidator(new UserDataValidator())
+            ->setId($record->uuid)
+            ->setName($record->name)
+            ->setCpf($record->cpf)
+            ->setEmail($record->email)
+            ->setCreatedAt($record->created_at);
+    }
+
     public function isExistentId(User $user): bool
     {
         return DB::table(self::TABLE_NAME)

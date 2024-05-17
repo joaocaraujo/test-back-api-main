@@ -8,6 +8,7 @@ interface UserPersistenceInterface
     public function isCpfAlreadyCreated(User $user): bool;
     public function isEmailAlreadyCreated(User $user): bool;
     public function findAll(User $user): array;
+    public function findById(string $id): ?object;
     public function isExistentId(User $user): bool;
     public function editName(User $user): void;
     public function editCpf(User $user): void;

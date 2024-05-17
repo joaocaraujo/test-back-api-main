@@ -15,6 +15,7 @@ class User
     private string $cpf;
     private string $dateCreation;
     private string $dateEdition;
+    private string $created_at;
 
     private UserDataValidatorInterface $dataValidator;
     private UuidGeneratorInterface $uuidGenerator;
@@ -80,11 +81,24 @@ class User
 
         return $this;
     }
-
+    
     public function getEmail(): string
     {
         return $this->email;
     }
+
+    public function setCreatedAt(string $createdAt): User
+    {
+        $this->created_at = $createdAt;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): string
+    {
+        return $this->created_at;
+    }
+
 
     public function setCpf(string $cpf): User
     {
@@ -170,6 +184,17 @@ class User
     public function findAll(): array
     {
         return $this->persistence->findAll($this);
+    }
+
+    public function findById(string $id): ?User
+    {
+        $user = $this->persistence->findById($id);
+
+        if (!$user) {
+            throw new UserNotFoundException('The user does not exist');
+        }
+
+        return $user;
     }
 
     public function editName(): void
