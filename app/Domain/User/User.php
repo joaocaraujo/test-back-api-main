@@ -234,4 +234,11 @@ class User
 
         $this->persistence->editEmail($this);
     }
+
+    public function delete(string $id)
+    {
+        $user = $this->persistence->delete($id);
+
+        return $user;
+    }
 }

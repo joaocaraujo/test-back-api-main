@@ -587,18 +587,40 @@ class UserController extends Controller
                 ], 
                 Response::HTTP_OK
                 );
-            } else {
-                $response = new JsonResponse([
-                    'result' => 'error',
-                    'message' => 'User not found'
-                ], 
-                Response::HTTP_NOT_FOUND
-                );
             }
-    
+            
             return $this->buildSuccessResponse($response);
         } catch (\Exception $e) {
-            throw $e;
+            return new JsonResponse([
+                'result' => 'error',
+                'message' => 'An error occurred while trying to show the user',
+                'error' => $e->getMessage()
+            ], 
+            Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $users = new User(new UserDb());
+
+            $users->delete($id);
+
+            return new JsonResponse([
+                'result' => 'success',
+                'message' => 'User deleted successfully'
+            ], 
+            Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'result' => 'error',
+                'message' => 'An error occurred while trying to delete the user',
+                'error' => $e->getMessage()
+            ], 
+            Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }
