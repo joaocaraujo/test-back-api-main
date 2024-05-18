@@ -562,7 +562,89 @@ class UserController extends Controller
             throw $e;
         }
     }
-    
+
+    /**
+     * @OA\Get(
+     *     path="/user/{id}",
+     *     summary="Mostra detalhes de um usuário específico por ID",
+     *     tags={"User"},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="ID do usuário para retornar dados",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sucesso",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="result",
+     *                 type="string",
+     *                 example="success"
+     *             ),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="string",
+     *                     example="a38a7ac8-9295-33c2-8c0b-5767c1449bc3"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Ronaldo de Assis Moreira"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string",
+     *                     example="ro.naldinho@email.com"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="cpf",
+     *                     type="string",
+     *                     example="2023-12-28 04:10:10"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="created_at",
+     *                     type="string",
+     *                     example="2023-12-28 04:10:10"
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="eligibility",
+     *                 type="boolean",
+     *                 example=true
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="result",
+     *                 type="string",
+     *                 example="error"
+     *             ),
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="An error occurred while trying to show the user"
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="string",
+     *                 example="Error message"
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function show($id) {
         try {
             $users = new User(new UserDb());
@@ -588,7 +670,7 @@ class UserController extends Controller
                 Response::HTTP_OK
                 );
             }
-            
+
             return $this->buildSuccessResponse($response);
         } catch (\Exception $e) {
             return new JsonResponse([
@@ -601,6 +683,59 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/user/{id}",
+     *     summary="Deleta um usuário específico por ID",
+     *     tags={"User"},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="ID do usuário para deletar",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sucesso",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="result",
+     *                 type="string",
+     *                 example="success"
+     *             ),
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="User deleted successfully"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="result",
+     *                 type="string",
+     *                 example="error"
+     *             ),
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="An error occurred while trying to delete the user"
+     *             ),
+     *             @OA\Property(
+     *                 property="error",
+     *                 type="string",
+     *                 example="The user has already been deleted."
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function delete($id) {
         try {
             $users = new User(new UserDb());
