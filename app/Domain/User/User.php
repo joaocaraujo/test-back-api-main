@@ -237,7 +237,13 @@ class User
 
     public function delete(string $id)
     {
-        $user = $this->persistence->delete($id);
+        $user = $this->persistence->findById($id);
+
+        if ($user === null) {
+            throw new UserNotFoundException('The user does not exist');
+        }
+
+        $this->persistence->delete($id);
 
         return $user;
     }

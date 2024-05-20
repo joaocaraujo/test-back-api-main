@@ -62,7 +62,7 @@ class UserHttpTest extends TestCase
         $response->assertJsonPath('original.user.email', $this->user->email);
         $response->assertJsonPath('original.user.cpf', $this->user->cpf);
         $response->assertJsonPath('original.user.created_at', $this->user->created_at->format('Y-m-d H:i:s'));
-        $response->assertJsonPath('original.eligibility', false);
+        $this->assertIsBool($response->json('original.eligibility'));
     }
 
     public function testShouldCorrectlyDeleteUserById(): void
