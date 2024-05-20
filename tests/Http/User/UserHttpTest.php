@@ -49,4 +49,19 @@ class UserHttpTest extends TestCase
             ]
         ]);
     }
+
+    public function testShouldCorrectlyReturnUserById(): void
+    {
+        $response = $this->call('GET', '/user/' . $this->user->uuid);
+
+        $response->assertStatus(self::HTTP_SUCCESS_STATUS);
+
+        $response->assertJsonPath('original.result', 'success');
+        $response->assertJsonPath('original.user.id', $this->user->uuid);
+        $response->assertJsonPath('original.user.name', $this->user->name);
+        $response->assertJsonPath('original.user.email', $this->user->email);
+        $response->assertJsonPath('original.user.cpf', $this->user->cpf);
+        $response->assertJsonPath('original.user.created_at', $this->user->created_at->format('Y-m-d H:i:s'));
+        $response->assertJsonPath('original.eligibility', false);
+    }
 }
