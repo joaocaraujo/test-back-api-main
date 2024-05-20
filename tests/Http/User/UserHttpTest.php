@@ -64,4 +64,17 @@ class UserHttpTest extends TestCase
         $response->assertJsonPath('original.user.created_at', $this->user->created_at->format('Y-m-d H:i:s'));
         $response->assertJsonPath('original.eligibility', false);
     }
+
+    public function testShouldCorrectlyDeleteUserById(): void
+    {
+        $response = $this->call('DELETE', '/user/' . $this->user->uuid);
+
+        $response->assertStatus(self::HTTP_SUCCESS_STATUS);
+
+        $response->assertJsonPath('result', 'success');
+        $response->assertJsonPath('message', 'User deleted successfully');
+
+        $deletedUser = User::find($this->user->uuid);
+        $this->assertNull($deletedUser);
+    }
 }
