@@ -3,6 +3,7 @@
 namespace Tests\Unit\User;
 
 use App\Domain\User\User;
+use App\Infra\Db\UserDb;
 use App\Domain\User\UserDataValidator;
 use App\Exceptions\DataValidationException;
 use App\Infra\File\Csv\Csv;
@@ -256,5 +257,33 @@ class UserTest extends TestCase
         $user = Mockery::mock(User::class);
         $user->shouldReceive('getCreatedAt')->andReturn('2021-01-01');
         $this->assertFalse(UserHelper::isEligible($user, Carbon::parse('2021-06-30')));
+    }
+
+    public function testFindByIdReturnsUserWhenValidIdIsProvided()
+    {
+        $userDb = Mockery::mock(UserDb::class);
+        
+        $user = (new User($userDb))
+            ->setDataValidator(new UserDataValidator())
+            ->setId($this->faker->uuid())
+            ->setName($this->faker->name())
+            ->setCpf(self::VALID_CPF)
+            ->setEmail($this->faker->email());
+    
+        $userDb->shouldReceive('findById')->andReturn($user);
+        $foundUser = $userDb->findById($user->getId());
+    
+        $this->assertEquals($user->getId(), $foundUser->getId());
+    }
+    
+    public function testFindByIdReturnsNullWhenInvalidIdIsProvided()
+    {
+        $userDb = Mockery::mock(UserDb::class);
+    
+        $invalidId = $this->faker->uuid();    
+        $userDb->shouldReceive('findById')->andReturn(null);    
+        $foundUser = $userDb->findById($invalidId);
+    
+        $this->assertNull($foundUser);
     }
 }
