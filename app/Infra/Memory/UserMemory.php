@@ -46,4 +46,12 @@ class UserMemory implements UserPersistenceInterface
     {
 
     }
+    public function findById(string $id): ?object
+    {
+
+    }
+    public function delete(string $id): void
+    {
+
+    }
 }

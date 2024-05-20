@@ -9,6 +9,9 @@ use App\Infra\File\Csv\Csv;
 use App\Infra\Memory\UserMemory;
 use Tests\TestCase;
 use Faker;
+use Mockery;
+use Carbon\Carbon;
+use App\Http\Helpers\UserHelper;
 
 class UserTest extends TestCase
 {
@@ -239,5 +242,19 @@ class UserTest extends TestCase
         (new User(new UserMemory()))->createFromBatch([$user]);
 
         $this->assertNotEmpty($user->getName());
+    }
+
+    public function testIsEligibleReturnsTrueWhenUserHasBeenCreatedMoreThanSixMonthsAgo()
+    {
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('getCreatedAt')->andReturn('2021-01-01');
+        $this->assertTrue(UserHelper::isEligible($user, Carbon::parse('2021-08-01')));
+    }
+
+    public function testIsEligibleReturnsFalseWhenUserHasBeenCreatedLessThanSixMonthsAgo()
+    {
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('getCreatedAt')->andReturn('2021-01-01');
+        $this->assertFalse(UserHelper::isEligible($user, Carbon::parse('2021-06-30')));
     }
 }
